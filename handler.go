@@ -63,10 +63,10 @@ func handler(prefix, folderPath, givenTitle, givenColor, bannerCode string, hide
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// If the method is GET, then we continue, we fail with "Method Not Allowed"
 		// otherwise, since all request are for files.
-		if r.Method != http.MethodGet {
-			http.Error(w, "only GET method is allowed", http.StatusMethodNotAllowed)
-			return
-		}
+		// if r.Method != http.MethodGet {
+		// 	http.Error(w, "only GET method is allowed", http.StatusMethodNotAllowed)
+		// 	return
+		// }
 
 		// Check if the prefix isn't "/", if so, remove it
 		if prefix != "/" {
@@ -113,6 +113,16 @@ func handler(prefix, folderPath, givenTitle, givenColor, bannerCode string, hide
 
 			walk(prefix, fullpath, givenTitle, givenColor, bannerCode, hideLinks, w, r)
 			return
+		}
+
+		// Don't set zip MIME type for apk/apks/ipa artifacts to comply with Appium cache functionality
+		ignoreZipMime := map[string]bool{
+			".apk":  true,
+			".apks": true,
+			",ipa":  true,
+		}
+		if ignoreZipMime[filepath.Ext(fullpath)] {
+			w.Header().Add("Content-Type", "application/octet-stream")
 		}
 
 		http.ServeFile(w, r, fullpath)
