@@ -119,7 +119,7 @@ func handler(prefix, folderPath, givenTitle, givenColor, bannerCode string, hide
 		ignoreZipMime := map[string]bool{
 			".apk":  true,
 			".apks": true,
-			",ipa":  true,
+			".ipa":  true,
 		}
 		if ignoreZipMime[filepath.Ext(fullpath)] {
 			w.Header().Add("Content-Type", "application/octet-stream")
